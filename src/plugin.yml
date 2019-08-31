@@ -1,0 +1,25 @@
+main: at.tewan.plugin.mcspy.Main
+version: 1.0.0
+name: mcspy
+description: Regularly writes performance and statistics data to a file to be read by nagios xi
+website: tewan.at
+author: Tewan
+database: false
+api-version: "1.14"
+load: POSTWORLD
+prefix: MCSpy
+
+commands:
+  mcspy:
+    description: Root command for all mcspy configuration subcommands
+    permission: mcspy.config
+    aliases: spy
+    usage: /spy help - For list of subcommands
+  wiretap:
+    description: Allows you to read private messages of players
+    permission: mcspy.wiretap
+    usage: /wiretap <player> <start|stop>
+  nagios:
+    description: Controls all NagiosXI data export commands
+    permission: mcspy.nagios
+    usage: /nagios help
