@@ -17,6 +17,10 @@ public class NagiosDaemon implements Runnable {
     public static final String DELAY_KEY = "delay";
     public static final String DEBUG_KEY = "debug";
 
+    private static final String NAGIOS_PACKAGE = "nagios";
+
+    private static final String OUTPUT_FOLDER = "exports";
+
     public static File exportContainer;
 
     private int interval; // Interval in seconds
@@ -24,13 +28,24 @@ public class NagiosDaemon implements Runnable {
     private boolean initialized;
     private boolean debug;
 
+    private ArrayList<NagiosExport> exports;
+    private ArrayList<NagiosQuery> queries;
+
     public NagiosDaemon(Main main) {
+
+        try {
+            Class.forName("org.reflections.Reflections");
+        } catch (ClassNotFoundException ex) {
+            System.err.println("[MCSpy] CRITICAL. FAILED TO LOAD REFLECTIONS LIBRARY. ABORTING");
+            main.onDisable();
+            return;
+        }
 
         debug = main.getConfig().getBoolean(DEBUG_KEY);
 
         System.out.println("Starting Nagios Export Daemon.");
 
-        exportContainer = new File(main.getDataFolder(), "output");
+        exportContainer = new File(main.getDataFolder(), OUTPUT_FOLDER);
 
         if(exportContainer.mkdir()) {
             System.out.println("Output directory does not exist. Created directory '" + exportContainer.toString() + "'");
@@ -40,16 +55,16 @@ public class NagiosDaemon implements Runnable {
 
         System.out.println("Reflecting exporters and queries");
 
-        Reflections reflections = new Reflections();
+        Reflections reflections = new Reflections(NAGIOS_PACKAGE);
         Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Nagios.class);
 
-        ArrayList<NagiosExport> exports = new ArrayList<>();
-        ArrayList<NagiosQuery> queries = new ArrayList<>();
+        exports = new ArrayList<>();
+        queries = new ArrayList<>();
 
         for(Class<?> annotatedClass : annotatedClasses) {
 
             try {
-                Object nagiosClass = (Object) annotatedClass.newInstance();
+                Object nagiosClass = annotatedClass.newInstance();
 
                 if(nagiosClass instanceof NagiosExport) {
                     NagiosExport export = (NagiosExport) nagiosClass;
@@ -78,15 +93,17 @@ public class NagiosDaemon implements Runnable {
 
             // Debug output
             if(debug) {
-                System.out.print("Export '" + export.getName() + "' uses queries: [");
+                StringBuilder querySummary = new StringBuilder();
+
                 for(String queryName : export.getQueryNames())
-                    System.out.print(queryName + ", ");
-                System.out.print("].");
+                    querySummary.append(queryName).append("|");
+
+                System.out.print("Export '" + export.getName() + "' uses queries: " + querySummary.toString());
             }
         }
 
         System.out.print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
-        System.out.println(exports.size() + " Exports and " + queries + " Queries found.");
+        System.out.println(exports.size() + " Exports and " + queries.size() + " Queries found.");
         System.out.print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 
         interval = main.getConfig().getInt(INTERVAL_KEY);
@@ -107,10 +124,12 @@ public class NagiosDaemon implements Runnable {
             initialized = true;
 
             System.out.println("=== Passed " + delay + "s delay. Starting to export on an interval of " + interval + "s. ===");
-
+            return;
         }
 
-
+        for(NagiosExport export : exports) {
+            export.write();
+        }
 
     }
 }

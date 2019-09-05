@@ -26,4 +26,16 @@ public interface NagiosQuery {
         return -1;
     }
 
+    public default String getSummary() {
+
+        char VALUE_SEPARATOR = ';';
+
+        return getName() + VALUE_SEPARATOR +
+                getValue() + VALUE_SEPARATOR +
+                (getWarning() >= 0 ? getWarning() : "") + VALUE_SEPARATOR +
+                (getCritical() >= 0 ? getCritical() : "") + VALUE_SEPARATOR +
+                getMin() + VALUE_SEPARATOR +
+                getMax() + VALUE_SEPARATOR;
+    }
+
 }

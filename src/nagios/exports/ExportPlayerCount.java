@@ -1,4 +1,4 @@
-package at.tewan.plugin.mcspy.nagios.exports;
+package nagios.exports;
 
 import at.tewan.plugin.mcspy.nagios.Nagios;
 import at.tewan.plugin.mcspy.nagios.NagiosExport;
@@ -7,7 +7,7 @@ import at.tewan.plugin.mcspy.nagios.NagiosExport;
 public class ExportPlayerCount extends NagiosExport {
 
     public ExportPlayerCount() {
-        super("Player Count", "TotalPlayerCount");
+        super("player_count", "Total Player Count");
     }
 
 }

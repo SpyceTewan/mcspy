@@ -1,10 +1,25 @@
 main: at.tewan.plugin.mcspy.Main
 version: 1.0.0
 name: mcspy
-description: Regularly writes performance and statistics data to a file to be read by nagios xi
+description: User moderation and system monitoring tools
 website: tewan.at
 author: Tewan
 database: false
+api-version: "1.14"
+load: POSTWORLD
+prefix: MCSpy
+
+permissions:
+  mcspy.*:
+    default: false
+    description: Grants access to all mcspy functionality
+  mcspy.wiretap:
+    default: false
+    description: Grants ability to listen to private conversations
+  mcspy.nagios:
+    default: false
+    description: Grants ability to enable / disable Nagios exports
+
 commands:
   mcspy:
     description: Root command for all mcspy configuration subcommands

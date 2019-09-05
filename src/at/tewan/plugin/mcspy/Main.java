@@ -1,5 +1,6 @@
 package at.tewan.plugin.mcspy;
 
+import at.tewan.plugin.mcspy.nagios.NagiosCommandHandler;
 import at.tewan.plugin.mcspy.nagios.NagiosDaemon;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,9 +24,11 @@ public class Main extends JavaPlugin {
         nagiosDaemon = new NagiosDaemon(this);
 
         CommandHandler cmdHandler = new CommandHandler(this);
+        NagiosCommandHandler nagiosCmdHandler = new NagiosCommandHandler(this);
 
         getCommand("mcspy").setExecutor(cmdHandler);
         getCommand("wiretap").setExecutor(cmdHandler);
+        getCommand("nagios").setExecutor(nagiosCmdHandler);
 
         wiretap = new Wiretap(this);
         getServer().getPluginManager().registerEvents(wiretap, this);

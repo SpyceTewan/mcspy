@@ -1,6 +1,8 @@
 package at.tewan.plugin.mcspy.nagios;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import static at.tewan.plugin.mcspy.nagios.NagiosDaemon.exportContainer;
 
@@ -8,7 +10,6 @@ public abstract class NagiosExport {
 
     private static final char SEPARATOR = '|';
 
-    private NagiosData[] dataSets;
     private File targetFile;
     private String name;
     private String[] queryNames;
@@ -25,22 +26,34 @@ public abstract class NagiosExport {
     public String toString() {
 
         String summary = "MCSpy Performance Export - " + name;
-        String data = "";
+        StringBuilder data = new StringBuilder();
 
-        for(NagiosData dataSet : dataSets) {
-            data += dataSet.toString();
+        for(NagiosQuery query : getQueries()) {
+            data.append(query.getSummary());
         }
 
         return summary + SEPARATOR + data;
     }
 
+    public void write() {
+
+        try (FileWriter targetFileWriter = new FileWriter(targetFile)) {
+
+            targetFileWriter.write(toString());
+
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
     public boolean addQuery(NagiosQuery query) {
 
-        for(NagiosQuery q : queries) {
-            if(q == query) return false;
+        for(int i = 0; i < queries.length; i++) {
+            if(queries[i] == query) return false;
 
-            if(q == null) {
-                q = query;
+            if(queries[i] == null) {
+                queries[i] = query;
                 return true;
             }
 
