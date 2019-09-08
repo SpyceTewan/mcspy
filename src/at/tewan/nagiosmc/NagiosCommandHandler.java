@@ -1,6 +1,5 @@
-package at.tewan.plugin.mcspy.nagios;
+package at.tewan.nagiosmc;
 
-import at.tewan.plugin.mcspy.Main;
 import com.sun.istack.internal.NotNull;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,7 +7,7 @@ import org.bukkit.command.CommandSender;
 
 public class NagiosCommandHandler implements CommandExecutor {
 
-    private static final String CMD_ROOT = "nagios";
+    static final String CMD_ROOT = "nagios";
     private static final String CMD_FORCE_EXPORT = "force";
 
     private Main main;
@@ -18,15 +17,15 @@ public class NagiosCommandHandler implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
 
-        if(command.getName().equalsIgnoreCase(CMD_ROOT)) {
+        if(cmd.getName().equalsIgnoreCase(CMD_ROOT)) {
 
             if(args.length > 0) {
 
                 if(args[0].equalsIgnoreCase(CMD_FORCE_EXPORT)) {
                     main.getNagiosDaemon().run();
-                    commandSender.sendMessage("Export has been forced");
+                    sender.sendMessage("Export has been forced");
                     return true;
                 }
 

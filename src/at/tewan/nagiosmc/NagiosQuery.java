@@ -1,14 +1,10 @@
-package at.tewan.plugin.mcspy.nagios;
+package at.tewan.nagiosmc;
 
 import org.bukkit.plugin.Plugin;
 
 public interface NagiosQuery {
 
-    public default void preInit(Plugin plugin) {
-
-    }
-
-    public default void postInit(Plugin plugin) {
+    public default void init(Plugin plugin) {
 
     }
 
@@ -26,7 +22,11 @@ public interface NagiosQuery {
         return -1;
     }
 
-    public default String getSummary() {
+    /** @return Returns the data in the nagios performance format: \n name;value;warning;critical;min;max \n If warning or critical are -1, they will be omitted
+     *
+     *
+     * */
+    public default String getData() {
 
         char VALUE_SEPARATOR = ';';
 

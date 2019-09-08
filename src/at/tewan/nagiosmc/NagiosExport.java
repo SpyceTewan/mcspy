@@ -1,10 +1,8 @@
-package at.tewan.plugin.mcspy.nagios;
+package at.tewan.nagiosmc;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import static at.tewan.plugin.mcspy.nagios.NagiosDaemon.exportContainer;
 
 public abstract class NagiosExport {
 
@@ -12,13 +10,13 @@ public abstract class NagiosExport {
 
     private File targetFile;
     private String name;
-    private String[] queryNames;
+    private Class[] queryClasses;
     private NagiosQuery[] queries;
 
-    public NagiosExport(String exportName, String... queries) {
-        targetFile = new File(exportContainer, exportName + ".txt");
+    public NagiosExport(String exportName, Class... queries) {
+        targetFile = new File(NagiosDaemon.exportContainer, exportName + ".txt");
         this.name = exportName;
-        this.queryNames = queries;
+        this.queryClasses = queries;
         this.queries = new NagiosQuery[queries.length];
     }
 
@@ -29,7 +27,7 @@ public abstract class NagiosExport {
         StringBuilder data = new StringBuilder();
 
         for(NagiosQuery query : getQueries()) {
-            data.append(query.getSummary());
+            data.append(query.getData());
         }
 
         return summary + SEPARATOR + data;
@@ -63,8 +61,8 @@ public abstract class NagiosExport {
 
     }
 
-    public String[] getQueryNames() {
-        return queryNames;
+    public Class[] getQueryClasses() {
+        return queryClasses;
     }
 
     public NagiosQuery[] getQueries() {

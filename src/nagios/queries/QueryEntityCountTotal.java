@@ -1,12 +1,12 @@
 package nagios.queries;
 
-import at.tewan.plugin.mcspy.nagios.Nagios;
-import at.tewan.plugin.mcspy.nagios.NagiosQuery;
+import at.tewan.nagiosmc.Nagios;
+import at.tewan.nagiosmc.NagiosQuery;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 @Nagios
-public class QueryTotalEntityCount implements NagiosQuery {
+public class QueryEntityCountTotal implements NagiosQuery {
 
 
     @Override

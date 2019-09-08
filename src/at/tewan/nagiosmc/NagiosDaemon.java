@@ -1,11 +1,8 @@
-package at.tewan.plugin.mcspy.nagios;
+package at.tewan.nagiosmc;
 
-import at.tewan.plugin.mcspy.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.reflections.Reflections;
-import sun.reflect.Reflection;
-import sun.reflect.misc.ReflectUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,15 +10,15 @@ import java.util.Set;
 
 public class NagiosDaemon implements Runnable {
 
-    public static final String INTERVAL_KEY = "interval";
-    public static final String DELAY_KEY = "delay";
-    public static final String DEBUG_KEY = "debug";
+    private static final String SUMMARY_KEY = "nagios.summary";
+    private static final String OUTPUT_KEY = "nagios.output";
+    private static final String INTERVAL_KEY = "nagios.interval";
+    private static final String DELAY_KEY = "nagios.delay";
+    private static final String DEBUG_KEY = "nagios.debug";
 
     private static final String NAGIOS_PACKAGE = "nagios";
 
-    private static final String OUTPUT_FOLDER = "exports";
-
-    public static File exportContainer;
+    static File exportContainer;
 
     private int interval; // Interval in seconds
     private int delay; // Time in seconds to wait before exporting
@@ -45,15 +42,15 @@ public class NagiosDaemon implements Runnable {
 
         System.out.println("Starting Nagios Export Daemon.");
 
-        exportContainer = new File(main.getDataFolder(), OUTPUT_FOLDER);
+        exportContainer = new File(main.getDataFolder(), "exports");
 
         if(exportContainer.mkdir()) {
-            System.out.println("Output directory does not exist. Created directory '" + exportContainer.toString() + "'");
+            debug("Output directory does not exist. Created directory '" + exportContainer.toString() + "'");
         } else {
-            System.out.println("Output directory found");
+            debug("Output directory found");
         }
 
-        System.out.println("Reflecting exporters and queries");
+        debug("Reflecting exporters and queries");
 
         Reflections reflections = new Reflections(NAGIOS_PACKAGE);
         Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(Nagios.class);
@@ -84,9 +81,9 @@ public class NagiosDaemon implements Runnable {
 
         // Assigning queries to exporters
         for(NagiosExport export : exports) {
-            for(String queryName : export.getQueryNames()) {
+            for(Class queryClass : export.getQueryClasses()) {
                 for(NagiosQuery query : queries) {
-                    if(query.getName().equalsIgnoreCase(queryName))
+                    if(query.getClass() == queryClass)
                         export.addQuery(query);
                 }
             }
@@ -95,21 +92,21 @@ public class NagiosDaemon implements Runnable {
             if(debug) {
                 StringBuilder querySummary = new StringBuilder();
 
-                for(String queryName : export.getQueryNames())
-                    querySummary.append(queryName).append("|");
+                for(Class queryClass : export.getQueryClasses())
+                    querySummary.append(queryClass.getSimpleName()).append("|");
 
-                System.out.print("Export '" + export.getName() + "' uses queries: " + querySummary.toString());
+                debug("Export '" + export.getName() + "' uses queries: " + querySummary.toString());
             }
         }
 
-        System.out.print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
-        System.out.println(exports.size() + " Exports and " + queries.size() + " Queries found.");
-        System.out.print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
+        debug("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
+        debug(exports.size() + " Exports and " + queries.size() + " Queries found.");
+        debug("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 
         interval = main.getConfig().getInt(INTERVAL_KEY);
         delay = main.getConfig().getInt(DELAY_KEY);
 
-        System.out.println("Running on an interval of " + interval + "s and a delay of " + delay + "s.");
+        debug("Running on an interval of " + interval + "s and a delay of " + delay + "s.");
 
         BukkitScheduler scheduler = Bukkit.getScheduler();
         scheduler.scheduleSyncRepeatingTask(main, this, delay, interval);
@@ -123,7 +120,7 @@ public class NagiosDaemon implements Runnable {
         if(!initialized) {
             initialized = true;
 
-            System.out.println("=== Passed " + delay + "s delay. Starting to export on an interval of " + interval + "s. ===");
+            debug("=== Passed " + delay + "s delay. Starting to export on an interval of " + interval + "s. ===");
             return;
         }
 
@@ -131,5 +128,18 @@ public class NagiosDaemon implements Runnable {
             export.write();
         }
 
+    }
+
+    private void debug(String message) {
+        if(debug)
+            System.out.println(message);
+    }
+
+    public ArrayList<NagiosExport> getExports() {
+        return exports;
+    }
+
+    public ArrayList<NagiosQuery> getQueries() {
+        return queries;
     }
 }

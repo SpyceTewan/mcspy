@@ -1,4 +1,4 @@
-package at.tewan.plugin.mcspy.nagios;
+package at.tewan.nagiosmc;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
