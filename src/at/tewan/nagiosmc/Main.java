@@ -16,6 +16,7 @@ public class Main extends JavaPlugin {
         NagiosCommandHandler nagiosCmdHandler = new NagiosCommandHandler(this);
 
         getCommand(NagiosCommandHandler.CMD_ROOT).setExecutor(nagiosCmdHandler);
+        getCommand(NagiosCommandHandler.CMD_ROOT).setTabCompleter(nagiosCmdHandler);
     }
 
     public NagiosDaemon getNagiosDaemon() {

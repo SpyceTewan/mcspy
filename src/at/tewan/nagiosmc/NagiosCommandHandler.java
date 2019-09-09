@@ -4,8 +4,13 @@ import com.sun.istack.internal.NotNull;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
-public class NagiosCommandHandler implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class NagiosCommandHandler implements CommandExecutor, TabCompleter {
 
     static final String CMD_ROOT = "nagios";
     private static final String CMD_FORCE_EXPORT = "force";
@@ -36,5 +41,17 @@ public class NagiosCommandHandler implements CommandExecutor {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String s, String[] args) {
+
+        ArrayList<String> list = new ArrayList<>();
+
+        if(args.length == 1) {
+            list.add(CMD_FORCE_EXPORT);
+        }
+
+        return list;
     }
 }

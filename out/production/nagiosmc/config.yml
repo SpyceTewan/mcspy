@@ -1,5 +1,4 @@
 nagios:
-  - summary: NagiosMC Export %name%
-  - interval: 300
-  - delay: 60
-  - debug: true
+  - interval: 6000 # Time in ticks the scheduler will run on
+  - delay: 1200 # Time in ticks to wait before starting to export
+  - debug: false # Print debug messages

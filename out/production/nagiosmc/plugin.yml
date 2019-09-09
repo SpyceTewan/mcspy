@@ -9,14 +9,7 @@ api-version: "1.14"
 load: POSTWORLD
 prefix: NagiosMC
 
-permissions:
-  nagios:
-    default: false
-    description: Grants access to all NagiosMC commands
-
 commands:
   nagios:
     description: Controls all NagiosXI data export commands
-    permission: nagios
-    permission-message: ''
     usage: /nagios help

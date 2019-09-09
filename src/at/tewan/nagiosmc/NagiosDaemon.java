@@ -10,8 +10,6 @@ import java.util.Set;
 
 public class NagiosDaemon implements Runnable {
 
-    private static final String SUMMARY_KEY = "nagios.summary";
-    private static final String OUTPUT_KEY = "nagios.output";
     private static final String INTERVAL_KEY = "nagios.interval";
     private static final String DELAY_KEY = "nagios.delay";
     private static final String DEBUG_KEY = "nagios.debug";
@@ -41,6 +39,8 @@ public class NagiosDaemon implements Runnable {
         debug = main.getConfig().getBoolean(DEBUG_KEY);
 
         System.out.println("Starting Nagios Export Daemon.");
+
+        System.out.println("Debug mode: " + debug);
 
         exportContainer = new File(main.getDataFolder(), "exports");
 
@@ -103,8 +103,8 @@ public class NagiosDaemon implements Runnable {
         debug(exports.size() + " Exports and " + queries.size() + " Queries found.");
         debug("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 
-        interval = main.getConfig().getInt(INTERVAL_KEY);
-        delay = main.getConfig().getInt(DELAY_KEY);
+        interval = main.getConfig().getInt(INTERVAL_KEY, 1000);
+        delay = main.getConfig().getInt(DELAY_KEY, 300);
 
         debug("Running on an interval of " + interval + "s and a delay of " + delay + "s.");
 
@@ -123,6 +123,8 @@ public class NagiosDaemon implements Runnable {
             debug("=== Passed " + delay + "s delay. Starting to export on an interval of " + interval + "s. ===");
             return;
         }
+
+        debug("Exporting..");
 
         for(NagiosExport export : exports) {
             export.write();
